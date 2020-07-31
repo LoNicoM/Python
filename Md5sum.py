@@ -92,7 +92,7 @@ def md5_sum(message):
 
 def but_hash_click():
     txt_output.delete("0.0", tk.END)
-    string_in = txt_string.get("0.3", tk.END).lstrip("\n")
+    string_in = txt_string.get("0.3", tk.END)[:-1]
     txt_output.insert("0.0", md5_sum(string_in))
 
 
