@@ -1,12 +1,15 @@
-# I am writing this program to get an understanding of how a hash funtion works
-
+# the md5 of this file not including this line is 8bd6566b3b7679338f07345e67ccf439
+# I am writing this program to get an understanding of how a hash function works,
+# most of this comes from wikipedia and got some hints from stack exchange
+# IMPORTS
+import tkinter as tk
 # CONSTANTS
 
-s = [[7, 12, 17, 22],[5, 9, 14, 20],[4, 11, 16, 23],[6, 10, 15, 21]]
+s = [[7, 12, 17, 22], [5, 9, 14, 20], [4, 11, 16, 23], [6, 10, 15, 21]]  # bit shift amounts
 
-k = [3614090360, 3905402710, 606105819, 3250441966, 4118548399,
-     1200080426, 2821735955, 4249261313, 1770035416, 2336552879,
-     4294925233, 2304563134, 1804603682, 4254626195, 2792965006,
+k = [3614090360, 3905402710, 606105819, 3250441966, 4118548399,  # I pre calculated these
+     1200080426, 2821735955, 4249261313, 1770035416, 2336552879,  # using a list so i don't
+     4294925233, 2304563134, 1804603682, 4254626195, 2792965006,  # have to import the math module
      1236535329, 4129170786, 3225465664, 643717713, 3921069994,
      3593408605, 38016083, 3634488961, 3889429448, 568446438,
      3275163606, 4107603335, 1163531501, 2850285829, 4243563512,
@@ -20,35 +23,41 @@ k = [3614090360, 3905402710, 606105819, 3250441966, 4118548399,
 
 # FUNCTIONS
 
-def swap_end(input):
-    return (((input << 24) & 0xFF000000) |
-            ((input << 8) & 0x00FF0000) |
-            ((input >> 8) & 0x0000FF00) |
-            ((input >> 24) & 0x000000FF))
+
+def swap_end(x):
+    return (((x << 24) & 4278190080) | ((x << 8) & 16711680) |
+            ((x >> 8) & 65280) | ((x >> 24) & 255))  # doesnt require any imports
+
+
+def str2bin(x):
+    return "".join([f"{i:08b}" for i in [ord(j2) for j2 in x]])  # string to bin string
+
 
 def prep_message(msg):
-    str2bin = lambda x: "".join([f"{i:08b}" for i in [ord(j2) for j2 in x]])
-    result = str2bin(msg) + "1"
-    while len(result) % 512 != 448: result += "0"
-    result += f"{swap_end((len(msg) * 8) % (2 ** 64)):064b}"
-    result = [result[i:i + 512] for i in range(0, len(result), 512)]
-    result = [[swap_end(int(j[i:i+32],2)) for i in range(0, len(j), 32)] for j in result]
-    result[-1].append(result[-1][-2]) # swap the end words
-    result[-1].pop(-3) # theres probably a better way to do this
+    result = str2bin(msg) + "1"  # create the variable and append a 1
+    length = f"{len(result) - 1:064b}"  # get length in bits
+    while len(result) % 512 != 448:
+        result += "0"  # pad until modulo 512 == 448
+    result = [result[i:i + 512] for i in range(0, len(result), 512)]  # split into 16 word blocks
+    result = [[swap_end(int(j[i:i+32], 2)) for i in range(0, len(j), 32)] for j in result]  # split those into words
+    result[-1].extend([int(length[33:], 2), int(length[:33], 2)])  # extend the length values
     return result
+
 
 def rot_left(x, n):
     return int(f"{x:032b}"[n:] + f"{x:032b}"[:n], 2)
 
+
 def mod_add(a, b):
     return (a + b) % (2 ** 32)
 
-def compute_sum(message):
 
-    mesg_32b = prep_message(message)
+def md5_sum(message):
+
+    message = prep_message(message)
     a0, b0, c0, d0 = 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
 
-    for item in range(len(mesg_32b)):
+    for item in range(len(message)):
         a, b, c, d = a0, b0, c0, d0
         for i in range(64):
             if i < 16:
@@ -67,11 +76,9 @@ def compute_sum(message):
                 f = c ^ (b | ~d)
                 g = (7 * i) % 16
                 rnd = 3
-            f = mod_add(f, mesg_32b[item][g])
-            f = mod_add(f, (k[i]))
-            f = mod_add(f, a)
-            f = rot_left(f, s[rnd][i % 4])
-            f = mod_add(f, b)
+
+            f = mod_add(rot_left(mod_add(mod_add(mod_add
+                        (f, a), (k[i])), message[item][g]), s[rnd][i % 4]), b)
 
             a, d, c, b = d, c, b, f
 
@@ -79,14 +86,51 @@ def compute_sum(message):
 
     return f"{swap_end(a0):08x}{swap_end(b0):08x}{swap_end(c0):08x}{swap_end(d0):08x}"
 
+# GUI STUFF
 
 
-
-# DEBUG / TESTING
-
-print(compute_sum("The quick brown fox jumps over the lazy dog."))
-print("e4d909c290d0fb1ca068ffaddf22cbd0")
-
+def but_hash_click():
+    txt_output.delete("0.0", tk.END)
+    string_in = txt_string.get("0.0", tk.END)
+    txt_output.insert("0.0", md5_sum(string_in))
 
 
+def but_clear_click():
+    txt_output.delete("0.0", tk.END)
+    txt_string.delete("0.0", tk.END)
 
+
+# MAIN WINDOW
+window = tk.Tk()
+window.title("md5_Sum by LeonM")
+window.iconbitmap('icon.ico')
+window.resizable(True, False)
+# FRAMES
+frm_1 = tk.Frame()
+frm_2 = tk.Frame()
+frm_3 = tk.Frame()
+# INPUT / OUTPUT BOXES
+lbl_string = tk.Label(master=frm_1, text="Input:", width=10)
+txt_string = tk.Text(master=frm_1, height=10)
+
+lbl_output = tk.Label(master=frm_2, text="MD5:", width=10)
+txt_output = tk.Text(master=frm_2, height=10)
+# BUTTONS
+but_encode = tk.Button(master=frm_3, text="Hash", width=8, height=1, command=but_hash_click)
+but_decode = tk.Button(master=frm_3, text="Clear", width=8, height=1, command=but_clear_click)
+
+# PACKING
+lbl_string.pack(side=tk.LEFT)
+txt_string.pack(fill=tk.BOTH)
+
+lbl_output.pack(side=tk.LEFT)
+txt_output.pack(fill=tk.BOTH)
+
+but_encode.pack(side=tk.LEFT)
+but_decode.pack(side=tk.LEFT)
+
+frm_1.pack(fill=tk.X)
+frm_2.pack(fill=tk.X)
+frm_3.pack(side=tk.RIGHT)
+
+window.mainloop()
