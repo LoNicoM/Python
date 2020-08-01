@@ -91,13 +91,13 @@ class Md5Sum():
 
 
 def but_hash_click():
-    txt_output.delete("0.0", tk.END)
+    ent_output.delete(0, tk.END)
     string_in = txt_string.get("0.3", tk.END)[:-1]
-    txt_output.insert("0.0", Md5Sum().digest(string_in))
+    ent_output.insert(0, Md5Sum().digest(string_in))
 
 
 def but_clear_click():
-    txt_output.delete("0.0", tk.END)
+    ent_output.delete(0, tk.END)
     txt_string.delete("0.0", tk.END)
 
 
@@ -105,34 +105,32 @@ def but_clear_click():
 window = tk.Tk()
 window.title("md5_Sum by LeonM")
 window.iconbitmap('icon.ico')
-window.minsize(360, 360)
-# window.resizable(True, False)
+window.minsize(470,230)
 # FRAMES
 frm_1 = tk.Frame()
 frm_2 = tk.Frame()
-frm_3 = tk.Frame()
 # INPUT / OUTPUT BOXES
 lbl_string = tk.Label(master=frm_1, text="Input:", width=10)
 txt_string = tk.Text(master=frm_1, height=10)
 
 lbl_output = tk.Label(master=frm_2, text="MD5:", width=10)
-txt_output = tk.Text(master=frm_2, height=10)
+ent_output = tk.Entry(master=frm_2, width=35)
 # BUTTONS
-but_encode = tk.Button(master=frm_3, text="Hash", width=8, height=1, command=but_hash_click)
-but_decode = tk.Button(master=frm_3, text="Clear", width=8, height=1, command=but_clear_click)
+but_encode = tk.Button(master=frm_2, text="Hash", width=8, height=1, command=but_hash_click)
+but_decode = tk.Button(master=frm_2, text="Clear", width=8, height=1, command=but_clear_click)
 
 # PACKING
+
 lbl_string.pack(side=tk.LEFT)
-txt_string.pack(fill=tk.BOTH)
+txt_string.pack(side=tk.LEFT, padx=10, pady=10, expand=True, fill='both')
 
 lbl_output.pack(side=tk.LEFT)
-txt_output.pack(fill=tk.BOTH)
+ent_output.pack(side=tk.LEFT, padx=10, pady=10)
 
-but_encode.pack(side=tk.LEFT)
-but_decode.pack(side=tk.LEFT)
+but_encode.pack(side=tk.LEFT, padx=5)
+but_decode.pack(side=tk.LEFT,padx=5)
 
-frm_1.pack(fill=tk.X)
-frm_2.pack(fill=tk.X)
-frm_3.pack(side=tk.RIGHT)
+frm_1.pack(fill=tk.BOTH, expand=True)
+frm_2.pack(fill=tk.X, expand=False)
 
 window.mainloop()
