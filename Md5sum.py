@@ -1,7 +1,11 @@
 # I am writing this program to get an understanding of how a hash function works,
-# most of this comes from wikipedia and got some hints from stack exchange
+# most of this comes from wikipedia and got some hints from stack exchange and IETF RFC 1321
+
+
 # IMPORTS
+
 import tkinter as tk
+
 # CONSTANTS
 
 s = [[7, 12, 17, 22], [5, 9, 14, 20], [4, 11, 16, 23], [6, 10, 15, 21]]  # bit shift amounts
