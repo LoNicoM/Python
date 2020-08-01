@@ -1,11 +1,7 @@
 # I am writing this program to get an understanding of how a hash function works,
-# most of this comes from wikipedia and got some hints from stack exchange and IETF RFC 1321
-
-
+# most of this comes from wikipedia and got some hints from stack exchange
 # IMPORTS
-
 import tkinter as tk
-
 # CONSTANTS
 
 s = [[7, 12, 17, 22], [5, 9, 14, 20], [4, 11, 16, 23], [6, 10, 15, 21]]  # bit shift amounts
@@ -37,7 +33,6 @@ def str2bin(x):
 
 
 def prep_message(msg):
-    print(msg)
     result = str2bin(msg) + "1"  # create the variable and append a 1
     length = f"{len(result) - 1:064b}"  # get length in bits
     while len(result) % 512 != 448:
@@ -45,7 +40,6 @@ def prep_message(msg):
     result = [result[i:i + 512] for i in range(0, len(result), 512)]  # split into 16 word blocks
     result = [[swap_end(int(j[i:i+32], 2)) for i in range(0, len(j), 32)] for j in result]  # split those into words
     result[-1].extend([int(length[33:], 2), int(length[:33], 2)])  # extend the length values
-    print(result)
     return result
 
 
@@ -53,14 +47,14 @@ def rot_left(x, n):
     return int(f"{x:032b}"[n:] + f"{x:032b}"[:n], 2)
 
 
-def mod_add(a, b):
-    return (a + b) % (2 ** 32)
+def add32(a, b):
+    return (a + b) % 4294967296 # modulo 32 bits
 
 
 def md5_sum(message):
 
     message = prep_message(message)
-    a0, b0, c0, d0 = 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
+    a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878
 
     for item in range(len(message)):
         a, b, c, d = a0, b0, c0, d0
@@ -82,12 +76,12 @@ def md5_sum(message):
                 g = (7 * i) % 16
                 rnd = 3
 
-            f = mod_add(rot_left(mod_add(mod_add(mod_add
+            f = add32(rot_left(add32(add32(add32
                         (f, a), (k[i])), message[item][g]), s[rnd][i % 4]), b)
 
             a, d, c, b = d, c, b, f
 
-        a0, b0, c0, d0 = mod_add(a0, a), mod_add(b0, b), mod_add(c0, c), mod_add(d0, d)
+        a0, b0, c0, d0 = add32(a0, a), add32(b0, b), add32(c0, c), add32(d0, d)
 
     return f"{swap_end(a0):08x}{swap_end(b0):08x}{swap_end(c0):08x}{swap_end(d0):08x}"
 
@@ -139,3 +133,4 @@ frm_2.pack(fill=tk.X)
 frm_3.pack(side=tk.RIGHT)
 
 window.mainloop()
+
