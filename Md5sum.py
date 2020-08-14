@@ -20,31 +20,28 @@ class Md5Sum():
                     3572445317, 76029189, 3654602809, 3873151461, 530742520, 3299628645,
                     4096336452, 1126891415, 2878612391, 4237533241, 1700485571, 2399980690,
                     4293915773, 2240044497, 1873313359, 4264355552, 2734768916, 1309151649,
-                    4149444226, 3174756917, 718787259, 3951481745]
+                    4149444226, 3174756917, 718787259, 3951481745]  # precalculated sin constants
 
 
     def swap_end(self, x):
         return (((x << 24) & 4278190080) | ((x << 8) & 16711680) |
                 ((x >> 8) & 65280) | ((x >> 24) & 255))  # doesnt require any imports
 
-
-    def str2bin(self, x):
-        return "".join([f"{i:08b}" for i in [ord(j2) for j2 in x]])  # string to bin string
-
-
     def prep_message(self, msg):
-        result = self.str2bin(msg) + "1"  # create the variable and append a 1
-        length = f"{len(result) - 1:064b}"  # get length in bits
-        while len(result) % 512 != 448:
-            result += "0"  # pad until modulo 512 == 448
-        result = [result[i:i + 512] for i in range(0, len(result), 512)]  # split into 16 word blocks
-        result = [[self.swap_end(int(j[i:i+32], 2)) for i in range(0, len(j), 32)] for j in result]  # split those into words
-        result[-1].extend([int(length[33:], 2), int(length[:33], 2)])  # extend the length values
+        result = list(bytearray(msg, "utf-8"))  # make a byte array
+        length = int.to_bytes(len(result) * 8, 8, "big")  # get length in bits
+        result.append(128)  # append a 10000000
+        result = [int.from_bytes(result[i:i + 4], "little") for i in range(0, len(result), 4)]
+        while len(result) % 16 != 14: # pad bytes
+            result.append(0)
+        result.extend([int.from_bytes(length[4:], "big"), int.from_bytes(length[:4], "big")])
+        result = [result[i:i+16] for i in range(0, len(result), 16)]
+
         return result
 
 
     def rot_left(self, x, n):
-        return int(f"{x:032b}"[n:] + f"{x:032b}"[:n], 2)
+        return (x << n) | (x >> (32 - n))
 
 
     def add32(self, a, b):
@@ -54,7 +51,7 @@ class Md5Sum():
     def digest(self, message):
 
         message = self.prep_message(message)
-        a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878
+        a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878 # initialize the values
 
         for item in range(len(message)):
             a, b, c, d = a0, b0, c0, d0
@@ -104,7 +101,7 @@ def but_clear_click():
 # MAIN WINDOW
 window = tk.Tk()
 window.title("md5_Sum by LeonM")
-window.iconbitmap('icon.ico')
+window.iconbitmap("icon.ico")
 window.minsize(470,230)
 # FRAMES
 frm_1 = tk.Frame()
@@ -122,7 +119,7 @@ but_decode = tk.Button(master=frm_2, text="Clear", width=8, height=1, command=bu
 # PACKING
 
 lbl_string.pack(side=tk.LEFT)
-txt_string.pack(side=tk.LEFT, padx=10, pady=10, expand=True, fill='both')
+txt_string.pack(side=tk.LEFT, padx=10, pady=10, expand=True, fill="both")
 
 lbl_output.pack(side=tk.LEFT)
 ent_output.pack(side=tk.LEFT, padx=10, pady=10)
@@ -130,7 +127,7 @@ ent_output.pack(side=tk.LEFT, padx=10, pady=10)
 but_encode.pack(side=tk.LEFT, padx=5)
 but_decode.pack(side=tk.LEFT,padx=5)
 
-frm_1.pack(fill=tk.BOTH, expand=True)
+frm_1.pack(fill="both", expand=True)
 frm_2.pack(fill=tk.X, expand=False)
 
 window.mainloop()
