@@ -3,7 +3,9 @@
 # IMPORTS
 import tkinter as tk
 # CONSTANTS
-class Md5Sum():
+
+
+class Md5Sum:
     def __init__(self):
 
         """ Calculate the MD5 Sum of the given."""
@@ -22,36 +24,32 @@ class Md5Sum():
                     4293915773, 2240044497, 1873313359, 4264355552, 2734768916, 1309151649,
                     4149444226, 3174756917, 718787259, 3951481745]  # precalculated sin constants
 
-
-    def swap_end(self, x):
-        return (((x << 24) & 4278190080) | ((x << 8) & 16711680) |
-                ((x >> 8) & 65280) | ((x >> 24) & 255))  # doesnt require any imports
-
-    def prep_message(self, msg):
-        result = list(bytearray(msg, "utf-8"))  # make a byte array
-        length = int.to_bytes(len(result) * 8, 8, "big")  # get length in bits
-        result.append(128)  # append a 10000000
-        result = [int.from_bytes(result[i:i + 4], "little") for i in range(0, len(result), 4)]
-        while len(result) % 16 != 14: # pad bytes
-            result.append(0)
-        result.extend([int.from_bytes(length[4:], "big"), int.from_bytes(length[:4], "big")])
-        result = [result[i:i+16] for i in range(0, len(result), 16)]
-
-        return result
-
-
-    def rot_left(self, x, n):
-        return (x << n) | (x >> (32 - n))
-
-
-    def add32(self, a, b):
-        return (a + b) % 4294967296  # modulo 32 bits
-
-
     def digest(self, message):
 
-        message = self.prep_message(message)
-        a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878 # initialize the values
+        def prep_message(msg):
+            result = list(bytearray(msg, "utf-8"))  # make a byte array
+            length = int.to_bytes(len(result) * 8, 8, "big")  # get length in bits
+            result.append(128)  # append a 10000000
+            result = [int.from_bytes(result[j:j + 4], "little") for j in range(0, len(result), 4)]
+            while len(result) % 16 != 14:  # pad bytes
+                result.append(0)
+            result.extend([int.from_bytes(length[4:], "big"), int.from_bytes(length[:4], "big")])
+            result = [result[j:j + 16] for j in range(0, len(result), 16)]
+
+            return result
+
+        def swap_end(x):
+            return (((x << 24) & 4278190080) | ((x << 8) & 16711680) |
+                    ((x >> 8) & 65280) | ((x >> 24) & 255))  # doesnt require any imports
+
+        def add32(x, y):
+            return (x + y) % 4294967296  # modulo 32 bits
+
+        def rot_left(x, n):
+            return (x << n) | (x >> (32 - n))
+
+        message = prep_message(message)
+        a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878  # initialize the values
 
         for item in range(len(message)):
             a, b, c, d = a0, b0, c0, d0
@@ -73,16 +71,15 @@ class Md5Sum():
                     g = (7 * i) % 16
                     rnd = 3
 
-                f = self.add32(self.rot_left(self.add32(self.add32(self.add32
-                                (f, a), (self.__k[i])), message[item][g]), self.__s[rnd][i % 4]), b)
+                f = add32(rot_left(add32(add32(add32(f, a),
+                                               (self.__k[i])), message[item][g]), self.__s[rnd][i % 4]), b)
 
                 a, d, c, b = d, c, b, f
 
-            a0, b0, c0, d0 = self.add32(a0, a), self.add32(b0, b),\
-                             self.add32(c0, c), self.add32(d0, d)
+            a0, b0, c0, d0 = add32(a0, a), add32(b0, b), add32(c0, c), add32(d0, d)
 
-        return f"{self.swap_end(a0):08x}{self.swap_end(b0):08x}" \
-               f"{self.swap_end(c0):08x}{self.swap_end(d0):08x}"
+        return f"{swap_end(a0):08x}{swap_end(b0):08x}" \
+               f"{swap_end(c0):08x}{swap_end(d0):08x}"
 
 # GUI STUFF
 
@@ -102,7 +99,7 @@ def but_clear_click():
 window = tk.Tk()
 window.title("md5_Sum by LeonM")
 window.iconbitmap("icon.ico")
-window.minsize(470,230)
+window.minsize(470, 230)
 # FRAMES
 frm_1 = tk.Frame()
 frm_2 = tk.Frame()
@@ -125,7 +122,7 @@ lbl_output.pack(side=tk.LEFT)
 ent_output.pack(side=tk.LEFT, padx=10, pady=10)
 
 but_encode.pack(side=tk.LEFT, padx=5)
-but_decode.pack(side=tk.LEFT,padx=5)
+but_decode.pack(side=tk.LEFT, padx=5)
 
 frm_1.pack(fill="both", expand=True)
 frm_2.pack(fill=tk.X, expand=False)
