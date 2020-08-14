@@ -9,6 +9,7 @@ class Md5Sum:
     def __init__(self):
 
         """ Calculate the MD5 Sum of the given."""
+        self.message = ""
 
         self.__s = [[7, 12, 17, 22], [5, 9, 14, 20], [4, 11, 16, 23], [6, 10, 15, 21]]  # bit shift amounts
 
@@ -24,7 +25,10 @@ class Md5Sum:
                     4293915773, 2240044497, 1873313359, 4264355552, 2734768916, 1309151649,
                     4149444226, 3174756917, 718787259, 3951481745]  # precalculated sin constants
 
-    def digest(self, message):
+    def set_message(self, input):
+        self.message = input
+
+    def digest(self):
 
         def prep_message(msg):
             result = list(bytearray(msg, "utf-8"))  # make a byte array
@@ -48,7 +52,7 @@ class Md5Sum:
         def rot_left(x, n):
             return (x << n) | (x >> (32 - n))
 
-        message = prep_message(message)
+        message = prep_message(self.message)
         a0, b0, c0, d0 = 1732584193, 4023233417, 2562383102, 271733878  # initialize the values
 
         for item in range(len(message)):
@@ -83,11 +87,13 @@ class Md5Sum:
 
 # GUI STUFF
 
+md5 = Md5Sum()
 
 def but_hash_click():
     ent_output.delete(0, tk.END)
     string_in = txt_string.get("0.3", tk.END)[:-1]
-    ent_output.insert(0, Md5Sum().digest(string_in))
+    md5.set_message(string_in)
+    ent_output.insert(0, md5.digest())
 
 
 def but_clear_click():
