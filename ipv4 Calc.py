@@ -49,7 +49,7 @@ class Ipv4Calc:
         elif 0xc0000101 <= self.ip_address <= 0xdffffefe:
             cls = 2
         # Other
-        elif 0xe0000000 <= self.ip_address <= 0xefffffff:
+        if 0xe0000000 <= self.ip_address <= 0xefffffff:
             typ, cls = 2, 3
         elif 0xf0000000 <= self.ip_address <= 0xfffffffe:
             typ, cls = 2, 4
