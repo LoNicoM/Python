@@ -9,6 +9,7 @@ class Ipv4Calc:
         self.broadcast = 0
         self.first_host = 0
         self.last_host = 0
+        self.range_type = ""
 
     def set_ip_address(self, x):  # TODO used for GUI
         self.ip_address = x
@@ -28,8 +29,56 @@ class Ipv4Calc:
     def set_broadcast(self):
         self.broadcast = self.network_id + (0xffffffff ^ self.subnet_mask)
 
+    def set_range_type(self):
+        types = ["Private", "Public", "Reserved"]
+        classes = ["Class A", "Class B", "Class C", "Multicatst Groups.", "Future Use.",
+                   "Loopback.", "APIPA Link Local.", "Benchmark Testing.", "Documentation.",
+                   "CG-NAT", "Software Source Only.", "IPv4 to Ipv6 Relay.", "IETF Protocol Assignments", ""]
+        # Private
+        if 0xa000000 <= self.ip_address <= 0xaffffff \
+                or 0xac100000 <= self.ip_address <= 0xac1fffff \
+                or 0xc0a80000 <= self.ip_address <= 0xc0a8ffff:
+            typ = 0
+        else:
+            typ = 1
+        # Classes
+        if 0x1000001 <= self.ip_address <= 0x7efffffe:
+            cls = 0
+        elif 0x80010001 <= self.ip_address <= 0xbffffffe:
+            cls = 1
+        elif 0xc0000101 <= self.ip_address <= 0xdffffefe:
+            cls = 2
+        # Other
+        elif 0xe0000000 <= self.ip_address <= 0xefffffff:
+            typ, cls = 2, 3
+        elif 0xf0000000 <= self.ip_address <= 0xfffffffe:
+            typ, cls = 2, 4
+        elif 0x7f000000 <= self.ip_address <= 0x7fffffff:
+            typ, cls = 2, 5
+        elif 0xa9fe0000 <= self.ip_address <= 0xa9feffff:
+            typ, cls = 0, 6
+        elif 0xc6336400 <= self.ip_address <= 0xc63364ff \
+                or 0xcb007100 <= self.ip_address <= 0xcb0071ff:
+            typ, cls = 2, 8
+        elif 0xc6120000 <= self.ip_address <= 0xc613ffff:
+            typ, cls = 2, 7
+        elif 0xc0586300 <= self.ip_address <= 0xc05863ff:
+            typ, cls = 2, 11
+        elif 0xc0000200 <= self.ip_address <= 0xc00002ff:
+            typ, cls = 2, 8
+        elif 0xc0000000 <= self.ip_address <= 0xc00000ff:
+            typ, cls = 2, 12
+        elif 0x64400000 <= self.ip_address <= 0x647fffff:
+            typ, cls = 2, 9
+        elif 0 <= self.ip_address <= 0xffffff:
+            typ, cls = 2, 10
+        else:
+            cls = -1
+
+        self.range_type = f"{types[typ]}, {classes[cls]}"
+
     def get_ip(self, d=0):
-        data = list(int.to_bytes(self.ip_address, 4, "big"))
+        data = int.to_bytes(self.ip_address, 4, "big")
         if d == 1:
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -40,7 +89,7 @@ class Ipv4Calc:
             return self.ip_address
 
     def get_subnet(self, d=0):
-        data = list(int.to_bytes(self.subnet_mask, 4, "big"))
+        data = int.to_bytes(self.subnet_mask, 4, "big")
         if d == 1:
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -55,7 +104,7 @@ class Ipv4Calc:
 
     def get_network(self, d=0):
         self.set_network_id()  # update if called
-        data = list(int.to_bytes(self.network_id, 4, "big"))
+        data = int.to_bytes(self.network_id, 4, "big")
         if d == 1:  # Decimal output
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -67,7 +116,7 @@ class Ipv4Calc:
 
     def get_first_host(self, d=0):
         self.set_first_host()  # update if called
-        data = list(int.to_bytes(self.first_host, 4, "big"))
+        data = int.to_bytes(self.first_host, 4, "big")
         if d == 1:  # Decimal output
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -79,7 +128,7 @@ class Ipv4Calc:
 
     def get_last_host(self, d=0):
         self.set_last_host()  # update if called
-        data = list(int.to_bytes(self.last_host, 4, "big"))
+        data = int.to_bytes(self.last_host, 4, "big")
         if d == 1:  # Decimal output
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -91,7 +140,7 @@ class Ipv4Calc:
 
     def get_broadcast(self, d=0):
         self.set_broadcast()  # update if called
-        data = list(int.to_bytes(self.broadcast, 4, "big"))
+        data = int.to_bytes(self.broadcast, 4, "big")
         if d == 1:  # Decimal output
             return f"{data[0]}.{data[1]}.{data[2]}.{data[3]}"
 
@@ -100,6 +149,10 @@ class Ipv4Calc:
 
         else:  # default, list output.
             return data
+
+    def get_range_type(self):
+        self.set_range_type()
+        return self.range_type
 
     def console_input(self):
         valid_subs = {255, 254, 252, 248, 240, 224, 192, 128, 0}
@@ -118,7 +171,7 @@ class Ipv4Calc:
                 if len(user_input) != 4 or type(user_input) != list:  # catch invalid input
                     raise ValueError
                 user_input = str_2_int(user_input)
-                if 0 < max(user_input) > 254:  # catches not numerical as ValueError, nice!
+                if 0 < max(user_input) > 255:  # catches not numerical as ValueError, nice!
                     raise ValueError
             except ValueError:  # ask the user to try again
                 print(f"Invalid, ", end="")
@@ -143,7 +196,7 @@ class Ipv4Calc:
                     else:
                         user_input = str_2_int(user_input, 1)
                         self.subnet_mask = int.from_bytes(user_input, "big")
-                        if f"{self.subnet_mask:032b}".strip("0").count("0") != 0: # check for contiguous 1's
+                        if f"{self.subnet_mask:032b}".rstrip("0").count("0") != 0:  # check for contiguous 1's
                             raise ValueError
                         break
             except ValueError:
@@ -163,7 +216,9 @@ class Ipv4Calc:
         ║ Last Host:     │ {self.get_last_host(d=1):^15} │ {self.get_last_host(d=2)} ║
         ║ Broadcast Add: │ {self.get_broadcast(d=1):^15} │ {self.get_broadcast(d=2)} ║
         ║ Max Hosts:     │ {self.last_host - self.first_host + 1:^15} │                                     ║
-        ╚════════════════╧═════════════════╧═════════════════════════════════════╝
+        ╟────────────────┼─────────────────┴─────────────────────────────────────╢
+        ║ Type:          │ {self.get_range_type():<53} ║
+        ╚════════════════╧═══════════════════════════════════════════════════════╝
         """)
 
     def __and__(self, x, y):
