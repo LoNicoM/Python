@@ -29,33 +29,19 @@ class Ipv4Calc:
     def set_broadcast(self):
         self.broadcast = self.network_id + (0xffffffff ^ self.subnet_mask)
 
-    def set_range_type(self):
+    def set_range_type(self):  # TODO, Add checks for correct subnet
         types = ["Private", "Public", "Reserved"]
-        classes = ["Class A", "Class B", "Class C", "Multicatst Groups.", "Future Use.",
-                   "Loopback.", "APIPA Link Local.", "Benchmark Testing.", "Documentation.",
+        classes = ["Class A", "Class B", "Class C", "Multicast Groups.", "Future Use.",
+                   "Loop back.", "APIPA Link Local.", "Benchmark Testing.", "Documentation.",
                    "CG-NAT", "Software Source Only.", "IPv4 to Ipv6 Relay.", "IETF Protocol Assignments", ""]
-        # Private
-        if 0xa000000 <= self.ip_address <= 0xaffffff \
-                or 0xac100000 <= self.ip_address <= 0xac1fffff \
-                or 0xc0a80000 <= self.ip_address <= 0xc0a8ffff:
-            typ = 0
-        else:
-            typ = 1
-        # Classes
-        if 0x1000001 <= self.ip_address <= 0x7efffffe:
-            cls = 0
-        elif 0x80010001 <= self.ip_address <= 0xbffffffe:
-            cls = 1
-        elif 0xc0000101 <= self.ip_address <= 0xdffffefe:
-            cls = 2
         # Other
-        if 0xe0000000 <= self.ip_address <= 0xefffffff:
+        if 0xe0000000 <= self.ip_address <= 0xefffffff:  # Multicast groups 224.0.0.0 - 239.255.255.255
             typ, cls = 2, 3
-        elif 0xf0000000 <= self.ip_address <= 0xfffffffe:
+        elif 0xf0000000 <= self.ip_address <= 0xfffffffe:  # Future use 240.0.0.0 - 255.255.255.254
             typ, cls = 2, 4
-        elif 0x7f000000 <= self.ip_address <= 0x7fffffff:
+        elif 0x7f000000 <= self.ip_address <= 0x7fffffff:  # Loop back 127.0.0.0 - 127.255.255.255
             typ, cls = 2, 5
-        elif 0xa9fe0000 <= self.ip_address <= 0xa9feffff:
+        elif 0xa9fe0000 <= self.ip_address <= 0xa9feffff:  # APIPA 169.254.0.0 - 169.254.255.255
             typ, cls = 0, 6
         elif 0xc6336400 <= self.ip_address <= 0xc63364ff \
                 or 0xcb007100 <= self.ip_address <= 0xcb0071ff:
@@ -73,7 +59,22 @@ class Ipv4Calc:
         elif 0 <= self.ip_address <= 0xffffff:
             typ, cls = 2, 10
         else:
-            cls = -1
+
+            # Wasnt any of those? must be public or private, I ass u me so.
+            if 0xa000000 <= self.ip_address <= 0xaffffff or 0xac100000 <= self.ip_address <= 0xac1fffff \
+                    or 0xc0a80000 <= self.ip_address <= 0xc0a8ffff:  # Private IP ranges
+                typ = 0
+            else:
+                typ = 1  # not private? ok we'll assume public
+            # Classes, set the class range.
+            if 0x1000001 <= self.ip_address <= 0x7efffffe:
+                cls = 0
+            elif 0x80010001 <= self.ip_address <= 0xbffffffe:
+                cls = 1
+            elif 0xc0000101 <= self.ip_address <= 0xdffffefe:
+                cls = 2
+            else:
+                cls = -1  # in the unlikely event that i've left a gaping hole *sarc
 
         self.range_type = f"{types[typ]}, {classes[cls]}"
 
@@ -173,12 +174,13 @@ class Ipv4Calc:
                 user_input = str_2_int(user_input)
                 if 0 < max(user_input) > 255:  # catches not numerical as ValueError, nice!
                     raise ValueError
+
+                self.ip_address = int.from_bytes(user_input, "big")  # store input as integer.
+                break
+
             except ValueError:  # ask the user to try again
                 print(f"Invalid, ", end="")
                 continue
-
-            self.ip_address = int.from_bytes(user_input, "big")  # store input as integer.
-            break
 
         while True:
             print("Enter Subnet Mask ", end="")
@@ -231,3 +233,5 @@ class Ipv4Calc:
 ip_bits = Ipv4Calc()
 ip_bits.console_input()
 ip_bits.console_print()
+
+# TODO, Add tkinter GUI Code below.
