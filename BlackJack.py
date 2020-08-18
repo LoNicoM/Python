@@ -77,7 +77,7 @@ def displayTable(stage = 0):
         print("BLACKJACK!", end="")
     print("")
     for i in range(noPlyrs):
-        print("| Player {} | {:>5} | ".format(i + 1, scores[i]), end="")2
+        print("| Player {} | {:>5} | ".format(i + 1, scores[i]), end="")
         for j in range(len(hands[i])):
             print("{:^4} ".format(hands[i][j]), end="")
         if scores[i] > 21:
