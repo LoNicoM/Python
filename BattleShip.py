@@ -1,5 +1,6 @@
 # A very early prototype console battleship game, maybe ill finish it one day
 # generates a random field of battleships, not much else
+# this is more just to test my understanding of classes and class inheritance.
 
 import numpy as np
 from random import randint
