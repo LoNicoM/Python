@@ -1,0 +1,64 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2020-11-04 18:24 AEDT
+Nmap scan report for 10.10.30.2
+Host is up (0.28s latency).
+Not shown: 998 closed ports
+PORT      STATE SERVICE VERSION
+9999/tcp  open  abyss?
+10000/tcp open  http    SimpleHTTPServer 0.6 (Python 2.7.3)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port9999-TCP:V=7.91%I=7%D=11/4%Time=5FA2574F%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,298,"_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\n_\|_\|_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|\x20\x20\x20\x20_\|_\|_\|
+SF:\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\x20\x20\x20_\|_\|_\|\x20\x20\x20\
+SF:x20\x20\x20_\|_\|_\|\x20\x20_\|_\|_\|\x20\x20\n_\|\x20\x20\x20\x20_\|\x
+SF:20\x20_\|_\|\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x
+SF:20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x
+SF:20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|\x20\x20\x20\x20_\|
+SF:\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x20\x
+SF:20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x
+SF:20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|_\|_\|\x20\x
+SF:20\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\x20_
+SF:\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|_\|\x20\x20\x20\x20\x20\x
+SF:20_\|_\|_\|\x20\x20_\|\x20\x20\x20\x20_\|\n\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\n\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
+SF:x20\x20_\|\n\n\[________________________\x20WELCOME\x20TO\x20BRAINPAN\x
+SF:20_________________________\]\n\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20ENTER\x
+SF:20THE\x20PASSWORD\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\n\n\
+SF:x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20>>\x20");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 69.09 seconds
+
+
+#### mona output
+
+[+] Looking for cyclic pattern in memory
+    Cyclic pattern (normal) found at 0x005ff700 (length 1000 bytes)
+    Cyclic pattern (normal) found at 0x005ffb30 (length 1000 bytes)
+    -  Stack pivot between 544 & 1544 bytes needed to land in this pattern
+    EIP contains normal pattern : 0x35724134 (offset 524)
+    ESP (0x005ff910) points at offset 528 in normal pattern (length 472)
+    EBP contains normal pattern : 0x72413372 (offset 520)
+    EDX (0x005ff700) points at offset 0 in normal pattern (length 1000)
+[+] Examining SEH chain
+
+[+] Examining stack (+- 1000 bytes) - looking for cyclic pattern
+    Walking stack from 0x005ff528 to 0x005ffcfc (0x000007d4 bytes)
+    0x005ff700 : Contains normal cyclic pattern at ESP-0x210 (-528) : offset 0, length 1000 (-> 0x005ffae7 : ESP+0x1d8)
+    0x005ffb30 : Contains normal cyclic pattern at ESP+0x220 (+544) : offset 0, length 1000 (-> 0x005fff17 : ESP+0x608)
+[+] Examining stack (+- 1000 bytes) - looking for pointers to cyclic pattern
+    Walking stack from 0x005ff528 to 0x005ffcfc (0x000007d4 bytes)
+    0x005ff6e8 : Pointer into normal cyclic pattern at ESP-0x228 (-552) : 0x005ff908 : offset 520, length 480
+    0x005ff6f0 : Pointer into normal cyclic pattern at ESP-0x220 (-544) : 0x005ff700 : offset 0, length 1000
+    0x005ffb00 : Pointer into normal cyclic pattern at ESP+0x1f0 (+496) : 0x005ffd30 : offset 512, length 488
