@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
 import socket
-from time import sleep
 import argparse
-import subprocess
 
 
 def create_pattern(length):

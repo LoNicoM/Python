@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import socket
-from time import sleep
 import argparse
 
 args = argparse.ArgumentParser()

